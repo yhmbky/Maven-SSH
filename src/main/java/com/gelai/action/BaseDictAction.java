@@ -48,7 +48,7 @@ public class BaseDictAction extends ActionSupport implements ModelDriven<BaseDic
 		//将json打印到页面中
 		HttpServletResponse response = ServletActionContext.getResponse();
 		response.setContentType("text/html; charset=UTF-8");
-		System.out.println("...........");
+		System.out.println("...........111111111");
 		try {
 			response.getWriter().print(jsonArray.toString());
 		} catch (IOException e) {
