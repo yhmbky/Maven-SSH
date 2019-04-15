@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+	<!-- struts2 2.5.20 高版本默认关闭动态调用，需要手动开启
+	1开启动态调用； <constant name="struts.enable.DynamicMethodInvocation" value="true"></constant>
+	2在package中设置 strict-method-invocation="false"
+	  -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="true"></constant>
+	<!-- 配置struts的常量 -->
+	<constant name="struts.multipart.maxSize" value="5242880"></constant>
+	<package name="struts" extends="struts-default" namespace="/" strict-method-invocation="false">
+		
+		<interceptors>
+			<interceptor name="LoginInterceptor" class="com.gelai.inter.LoginInterceptor"></interceptor>
+		</interceptors>
+		<global-results>
+			<result name="login">/login.jsp</result>
+		</global-results>
+		
+		<!-- 配置用户管理的action -->
+		<action name="user_*" class="com.gelai.action.UserAction" method="{1}">
+			<result name="login">/login.jsp</result>
+			<result name="success" type="redirect">/index.jsp</result>
+		</action>
+		<!-- 配置客户管理的action -->
+		<action name="customer_*" class="com.gelai.action.CustomerAction" method="{1}">
+			<result name="saveUI">/jsp/customer/add.jsp</result>
+			<result name="save" type="redirectAction">/customer_find.action?current=1</result>
+			<result name="findAll">/jsp/customer/list.jsp</result>
+			<result name="delete" type="redirectAction">/customer_find.action?current=1</result>
+			<result name="input">/jsp/error.jsp</result>
+			<result name="edit">/jsp/customer/edit.jsp</result>
+			<result name="update" type="redirectAction">/customer_find.action?current=1</result>
+			<interceptor-ref name="LoginInterceptor"/>
+			<interceptor-ref name="defaultStack">
+				<param name="fileUpload.maximumSize">2097152</param>
+				<param name="fileUpload.allowedExtensionsSet">.jpg,.jpeg,.png,.txt,.bmp</param>
+			</interceptor-ref>
+		</action>
+		<!-- 配置字段类管理的action -->
+		<action name="baseDict_*" class="com.gelai.action.BaseDictAction" method="{1}">
+			<interceptor-ref name="LoginInterceptor"/>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+		<!-- 配置联系人的action -->
+		<action name="linkMan_*" class="com.gelai.action.LinkManAction" method="{1}">
+			<result name="findAll">/jsp/linkman/list.jsp</result>
+			<result name="saveUI">/jsp/linkman/add.jsp</result>
+			<result name="save" type="redirectAction">/linkMan_find.action?current=1</result>
+			<result name="edit">/jsp/linkman/edit.jsp</result>
+			<result name="update" type="redirectAction">/linkMan_find.action?current=1</result>
+			<result name="delete" type="redirectAction">/linkMan_find.action?current=1</result>
+			<interceptor-ref name="LoginInterceptor"/>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+		<!-- 配置客户拜访 -->
+		<action name="saleVisit_*" class="com.gelai.action.SaleVisitAction" method="{1}">
+			<result name="findAll">/jsp/saleVisit/list.jsp</result>
+			<result name="saveUI">/jsp/saleVisit/add.jsp</result>
+			<result name="save" type="redirectAction">/saleVisit_find.action?current=1</result>
+			<result name="edit">/jsp/saleVisit/edit.jsp</result>
+			<result name="update" type="redirectAction">/saleVisit_find.action?current=1</result>
+			<result name="delete" type="redirectAction">/saleVisit_find.action?current=1</result>
+			<interceptor-ref name="LoginInterceptor"/>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+	</package>
+</struts>

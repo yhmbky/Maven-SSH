@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd 
+						http://www.springframework.org/schema/mvc 
+						http://www.springframework.org/schema/mvc/spring-mvc.xsd 
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context.xsd 
+						http://www.springframework.org/schema/aop 
+						http://www.springframework.org/schema/aop/spring-aop.xsd 
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx.xsd ">
+	<!-- 引入jdbcInfo.properties文件 -->
+	<context:property-placeholder location="classpath:jdbcInfo.properties"/>
+	<!-- 配置c3p0连接池 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driverClass}"></property>
+		<property name="jdbcUrl" value="${jdbc.jdbcUrl}"></property>
+		<property name="user" value="${jdbc.user}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+	</bean>
+	<!-- 配置LocalSessionFactoryBean -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="hibernateProperties">
+            <props>
+            	<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+            	<prop key="hibernate.show_sql">true</prop>
+            	<prop key="hibernate.format_sql">true</prop>
+            	<prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+        	<!-- 映射文件第一种 -->
+            <property name="mappingResources">
+            	<list>
+            		<value>/com/gelai/bean/user.hbm.xml</value>
+            		<value>/com/gelai/bean/customer.hbm.xml</value>
+            		<value>/com/gelai/bean/baseDict.hbm.xml</value>
+            		<value>/com/gelai/bean/linkman.hbm.xml</value>
+            		<value>/com/gelai/bean/saleVisit.hbm.xml</value>
+            	</list>
+            </property>
+	</bean>
+	<!-- 配置事务 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	<!-- 配置用户 -->
+	<bean id="userDao" class="com.gelai.dao.impl.UserDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="userService" class="com.gelai.service.impl.UserServiceImpl">
+		<property name="userDao" ref="userDao"></property>
+	</bean>
+	<bean id="userAction" class="com.gelai.action.UserAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	
+	<!-- 配置客户 -->
+	<bean id="customerDao" class="com.gelai.dao.impl.CustomerDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="customerService" class="com.gelai.service.impl.CustomerServiceImpl">
+		<property name="customerDao" ref="customerDao"></property>
+	</bean>
+	<bean id="customerAction" class="com.gelai.action.CustomerAction" scope="prototype">
+		<property name="customerService" ref="customerService"></property>
+	</bean>
+	
+	<!-- 配置字典类 -->
+	<bean id="baseDictDao" class="com.gelai.dao.impl.BaseDictDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="baseDictService" class="com.gelai.service.impl.BaseDictServiceImpl">
+		<property name="baseDictDao" ref="baseDictDao"></property>
+	</bean>
+	<bean id="baseDictAction" class="com.gelai.action.BaseDictAction" scope="prototype">
+		<property name="baseDictService" ref="baseDictService"></property>
+	</bean>
+	
+	<!-- 配置联系人 -->
+	<bean id="linkManDao" class="com.gelai.dao.impl.LinkManDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="linkManService" class="com.gelai.service.impl.LinkManServiceImpl">
+		<property name="linkManDao" ref="linkManDao"></property>
+	</bean>
+	<bean id="linkManAction" class="com.gelai.action.LinkManAction" scope="prototype">
+		<property name="customerService" ref="customerService"></property>
+		<property name="linkManService" ref="linkManService"></property>
+	</bean>
+	
+	<!-- 配置客户拜访 -->
+	<bean id="saleVisitDao" class="com.gelai.dao.impl.SaleVisitDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="saleVisitService" class="com.gelai.service.impl.SaleVisitServiceImpl">
+		<property name="saleVisitDao" ref="saleVisitDao"></property>
+	</bean>
+	<bean id="saleVisitAction" class="com.gelai.action.SaleVisitAction" scope="prototype">
+		<property name="saleVisitService" ref="saleVisitService"></property>
+	</bean>
+</beans>
